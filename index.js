@@ -1,19 +1,72 @@
-let cityNameElement = document.querySelector('.search-box');
-let cityName = 'chennai';
 
-// cityNameElement.addEventListener('keypress', (e)=>{
+const userInput = document.querySelector('.search-box');
 
-//     setTimeout(() => {
-//         cityName = e.target.value
-//     }, 1000);
-// })
+userInput.addEventListener('keypress', function (event) {
+    console.log(event);
+    console.log('keypress');
 
-
-const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=c8b4d17142ba5f1db95a6fb3fc5aa221`
-
+    if (event.code === 'Enter') {
+        fetchWeatherData(userInput.value);
+    }
+});
 
 
-    let res = fetch(url).then(response => response.json()).then
-(data=> data);
+const fetchWeatherData = (city) => {
+    const apiKey = 'ffb471cd338737ac7d56a347f37a23fe';
+    const url = `http://api.openweathermap.org/data/2.5/find?q=${city}&appid=${apiKey}&units=metric`;
 
-console.log(res)
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            showWeather(data);
+        })
+        .catch(error => alert(error.message));
+
+};
+
+const showWeather = (data) => {
+    document.querySelector('.city').textContent = data.list[0].name + ', ' + data.list[0].sys.country;
+
+    document.querySelector('.temp').textContent = data.list[0].main.temp;
+
+    document.querySelector('.weather').textContent = data.list[0].weather[0].description.toUpperCase();
+
+    document.querySelector('.hi-low').textContent = data.list[0].main.temp_min + ' °C / ' + data.list[0].main.temp_max + ' °C';
+
+    document.querySelector('.date').textContent = getFormatedDate(data.list[0].dt);
+};
+
+const getFormatedDate = (dt) => {
+    const date = new Date(dt * 1000);
+    console.log(date);
+
+    const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ];
+
+    const days = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+    ];
+
+    const formattedDate = `${days[date.getDay()]} ${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`;
+    return formattedDate;
+
+}
